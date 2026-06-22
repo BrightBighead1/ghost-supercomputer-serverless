@@ -55,15 +55,14 @@ $0/month AI agent hosting platform. No credit card required. No student email. N
 
 See `.env.example` for all required and optional variables.
 
-Required (at least one LLM key):
-- `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`
+Required:
+- `NEON_DATABASE_URL` — PostgreSQL database
+- `GITHUB_TOKEN` — LLM API access (GitHub Models)
 
 Optional (free tiers):
-- `SUPABASE_URL` + `SUPABASE_ANON_KEY`
-- `CF_R2_ENDPOINT` + `CF_R2_ACCESS_KEY_ID` + `CF_R2_SECRET_ACCESS_KEY`
-- `MODAL_TOKEN_ID` + `MODAL_TOKEN_SECRET`
-- `COMPOSIO_API_KEY`
-- `FIRECRAWL_API_KEY`
+- `CF_R2_ENDPOINT` + `CF_R2_ACCESS_KEY_ID` + `CF_R2_SECRET_ACCESS_KEY` — Cloudflare R2 storage
+- `COMPOSIO_API_KEY` — Tool integrations
+- `N8N_WEBHOOK_URL` — n8n workflow notifications
 
 ## Architecture
 
