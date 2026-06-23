@@ -1,0 +1,17 @@
+name: composio_integration
+description: Execute Composio tool integrations
+input_schema:
+  properties:
+    app:
+      type: string
+      description: Composio app name (e.g., github, slack, gmail)
+    action:
+      type: string
+      description: Action to execute
+    params:
+      type: object
+      description: Action parameters
+  required: [app, action]
+implementation:
+  script: scripts/composio.sh
+  runtime: sh

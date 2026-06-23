@@ -1,12 +1,13 @@
 spec_version: "0.1.0"
 name: ghost-supercomputer
-version: 1.0.0
-description: Ghost SuperComputer — $0 AI agent on Hugging Face Spaces
+version: 2.0.0
+description: Ghost SuperComputer — $0 AI supercomputer on Hugging Face Spaces
 
 model:
   preferred: "github:gpt-4o-mini"
   fallback:
     - "anthropic:claude-3-haiku-20240307"
+    - "modal:ghost-gpu-inference"
   constraints:
     temperature: 0.7
     max_tokens: 4096
@@ -18,8 +19,14 @@ tools:
   - memory
   - search_docs
   - query_database
+  - query_tidb
+  - query_qdrant
+  - query_qdrant_cloud
   - upload_file
   - send_notification
+  - web_scrape
+  - gpu_compute
+  - composio_integration
 
 runtime:
   max_turns: 50
@@ -29,11 +36,82 @@ skills:
   - code-review
   - data-analysis
   - web-research
+  - database-operations
+  - vector-search
+  - gpu-acceleration
 
 memory:
-  backend: neon
-  table: agent_memory
-  max_entries: 10000
+  primary:
+    backend: neon
+    table: agent_memory
+    max_entries: 10000
+  secondary:
+    backend: tidb
+    table: agent_memory_secondary
+    max_entries: 50000
+  vectors:
+    local:
+      backend: qdrant_local
+      collection: ghost_memory_local
+    cloud:
+      backend: qdrant_cloud
+      collection: ghost_memory_cloud
+
+databases:
+  neon:
+    type: postgresql
+    url: "${NEON_DATABASE_URL}"
+    purpose: Primary database, relational queries
+  tidb:
+    type: mysql
+    host: "${TIDB_HOST}"
+    port: "${TIDB_PORT}"
+    user: "${TIDB_USER}"
+    password: "${TIDB_PASSWORD}"
+    database: "${TIDB_DATABASE}"
+    purpose: Secondary database, HTAP analytics
+  pocketbase:
+    type: sqlite
+    url: "http://127.0.0.1:8090"
+    purpose: Auth, quick database, real-time subscriptions
+  qdrant_local:
+    type: vector
+    url: "http://127.0.0.1:6333"
+    collection: ghost_memory_local
+    purpose: Fast local vector cache
+  qdrant_cloud:
+    type: vector
+    url: "${QDRANT_CLOUD_URL}"
+    api_key: "${QDRANT_CLOUD_API_KEY}"
+    collection: ghost_memory_cloud
+    purpose: Persistent vector storage
+
+storage:
+  cloudflare_r2:
+    endpoint: "${CF_R2_ENDPOINT}"
+    access_key: "${CF_R2_ACCESS_KEY_ID}"
+    secret_key: "${CF_R2_SECRET_ACCESS_KEY}"
+    bucket: "${CF_R2_BUCKET}"
+    purpose: File storage, static assets
+
+compute:
+  modal:
+    token_id: "${MODAL_TOKEN_ID}"
+    token_secret: "${MODAL_TOKEN_SECRET}"
+    app_name: "${MODAL_APP_NAME}"
+    purpose: GPU inference, heavy compute tasks
+
+integrations:
+  composio:
+    api_key: "${COMPOSIO_API_KEY}"
+    purpose: Tool integrations, external APIs
+  firecrawl:
+    api_key: "${FIRECRAWL_API_KEY}"
+    purpose: Web scraping, content extraction
+  n8n:
+    webhook_url: "${N8N_WEBHOOK_URL}"
+    api_key: "${N8N_API_KEY}"
+    purpose: Workflow automation, notifications
 
 compliance:
   risk_level: low

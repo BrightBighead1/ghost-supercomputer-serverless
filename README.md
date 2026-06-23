@@ -10,16 +10,101 @@ pinned: true
 
 # Ghost SuperComputer
 
-$0/month AI agent hosting platform. No credit card required. No student email. No trial expiration.
+$0/month AI supercomputer. No credit card required. Beats Oracle Cloud Free Tier.
 
 ## What You Get
 
-- **16 GB RAM** (more than Oracle Cloud's 12 GB)
-- **2 vCPU x86** (Oracle is ARM-only)
-- **7 services** in a single container
-- **Web terminal** (ttyd) — SSH alternative, free
-- **Always-on** — UptimeRobot + cron-job.org keep-alive
-- **Instant signup** — connect GitHub, deploy
+| Resource | Oracle Cloud Free | Ghost SuperComputer |
+|----------|------------------|-------------------|
+| RAM | 12 GB (ARM) | **16 GB + Modal GPU** |
+| CPU | 4 OCPU ARM | **2 vCPU x86** |
+| Storage | 200 GB | **15.5 GB cloud + 50 GB disk** |
+| Databases | 1 (ATP) | **3 (Neon + TiDB + PocketBase)** |
+| Vector DB | None | **Qdrant Cloud + Local** |
+| Workflows | None | **n8n Cloud** |
+| Web Terminal | None | **ttyd** |
+| LLM API | None | **GitHub Models** |
+| Credit card | Required | **NOT required** |
+
+## 15 Services Running
+
+| # | Service | Free Tier | Purpose |
+|---|---------|-----------|---------|
+| 1 | Hugging Face Spaces | 16 GB RAM, 2 vCPU | Primary compute |
+| 2 | Neon Database | 0.5 GB PostgreSQL | Primary database |
+| 3 | TiDB Cloud Serverless | 5 GB MySQL/HTAP | Secondary database |
+| 4 | Qdrant Cloud | 1 GB vectors | Vector search |
+| 5 | Modal | $30/mo compute | Heavy GPU tasks |
+| 6 | Cloudflare R2 | 10 GB storage | File storage |
+| 7 | n8n Cloud | 5 workflows | Automation |
+| 8 | PocketBase | Local SQLite | Auth + quick DB |
+| 9 | Qdrant Local | Local storage | Fast vector cache |
+| 10 | Composio | 1K executions | Tool integrations |
+| 11 | GitHub Models | gpt-4o-mini | LLM inference |
+| 12 | Firecrawl | 1K pages/mo | Web scraping |
+| 13 | UptimeRobot | 50 monitors | Keep-alive #1 |
+| 14 | cron-job.org | 50 jobs | Keep-alive #2 |
+| 15 | ttyd | Local | Web terminal |
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    GHOST SUPERCOMPUTER                          │
+│                    $0/month | 16 GB RAM                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  HF Spaces Container (2 vCPU, 16 GB RAM, 50 GB disk)    │  │
+│  │                                                           │  │
+│  │  ┌─────────┐  ┌──────────┐  ┌─────────┐  ┌───────────┐  │  │
+│  │  │  Nginx  │  │ GitAgent │  │   n8n   │  │ PocketBase│  │  │
+│  │  │ :7860   │──│  :3333   │──│  :5678  │──│   :8090   │  │  │
+│  │  └─────────┘  └──────────┘  └─────────┘  └───────────┘  │  │
+│  │       │              │            │             │         │  │
+│  │  ┌─────────┐  ┌──────────┐  ┌─────────┐  ┌───────────┐  │  │
+│  │  │  ttyd   │  │  Qdrant  │  │ keep-   │  │   tools/  │  │  │
+│  │  │ :7681   │  │  :6333   │  │  alive  │  │  scripts  │  │  │
+│  │  └─────────┘  └──────────┘  └─────────┘  └───────────┘  │  │
+│  │                                                           │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│                              │                                  │
+│         ┌────────────────────┼────────────────────┐             │
+│         │                    │                    │             │
+│         ▼                    ▼                    ▼             │
+│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐       │
+│  │  Neon DB    │  │ TiDB Cloud   │  │ Qdrant Cloud    │       │
+│  │  0.5 GB     │  │  5 GB        │  │  1 GB           │       │
+│  │  PostgreSQL │  │  MySQL/HTAP  │  │  Vectors        │       │
+│  └─────────────┘  └──────────────┘  └─────────────────┘       │
+│         │                    │                    │             │
+│         ▼                    ▼                    ▼             │
+│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐       │
+│  │ Cloudflare  │  │    Modal     │  │   Composio      │       │
+│  │ R2 10 GB    │  │  $30/mo GPU  │  │  1K exec/mo     │       │
+│  └─────────────┘  └──────────────┘  └─────────────────┘       │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Total Free Resources
+
+| Resource | Amount |
+|----------|--------|
+| RAM | 16 GB (HF) + Modal GPU |
+| CPU | 2 vCPU x86 + Modal |
+| Storage | 50 GB disk + 15.5 GB cloud |
+| PostgreSQL | 0.5 GB (Neon) |
+| MySQL/HTAP | 5 GB (TiDB) |
+| SQLite | Unlimited (local) |
+| Vector DB | 1 GB (Qdrant Cloud) + Local |
+| File Storage | 10 GB (Cloudflare R2) |
+| Workflows | 5 (n8n Cloud) |
+| LLM Queries | Unlimited (GitHub Models) |
+| Web Scraping | 1K pages/mo (Firecrawl) |
+| Tool Executions | 1K/mo (Composio) |
+| Keep-Alive | Unlimited (UptimeRobot + cron-job.org) |
+| **Total** | **$0/month** |
 
 ## Services
 
@@ -60,34 +145,13 @@ Required:
 - `GITHUB_TOKEN` — LLM API access (GitHub Models)
 
 Optional (free tiers):
-- `CF_R2_ENDPOINT` + `CF_R2_ACCESS_KEY_ID` + `CF_R2_SECRET_ACCESS_KEY` — Cloudflare R2 storage
-- `COMPOSIO_API_KEY` — Tool integrations
+- `TIDB_HOST` + `TIDB_USER` + `TIDB_PASSWORD` — TiDB Cloud (5 GB)
+- `QDRANT_CLOUD_URL` + `QDRANT_CLOUD_API_KEY` — Qdrant Cloud (1 GB)
+- `MODAL_TOKEN_ID` + `MODAL_TOKEN_SECRET` — Modal GPU ($30/mo)
+- `CF_R2_ENDPOINT` + `CF_R2_ACCESS_KEY_ID` + `CF_R2_SECRET_ACCESS_KEY` — Cloudflare R2 (10 GB)
 - `N8N_WEBHOOK_URL` — n8n workflow notifications
-
-## Architecture
-
-```
-Hugging Face Spaces (2 vCPU, 16 GB RAM)
-├── Nginx (reverse proxy, port 7860)
-├── GitAgent (AI agent runtime, port 3333)
-├── n8n (workflow automation, port 5678)
-├── PocketBase (auth + DB, port 8090)
-├── Qdrant (vector search, port 6333)
-├── ttyd (web terminal, port 7681)
-└── keep-alive.sh (health monitor)
-```
-
-## vs Oracle Cloud
-
-| Feature | Oracle Cloud Free | Ghost SuperComputer |
-|---------|------------------|-------------------|
-| RAM | 12 GB (ARM) | **16 GB (x86)** |
-| Credit card | Required | **NOT required** |
-| Signup | Minutes-days | **Instant** |
-| Services | Just OS | **7 included** |
-| Web terminal | None | **ttyd built-in** |
-| Dashboards | 1 (complex) | **6 (simple)** |
-| Agent runtime | None | **GitAgent built-in** |
+- `COMPOSIO_API_KEY` — Tool integrations
+- `FIRECRAWL_API_KEY` — Web scraping
 
 ## License
 

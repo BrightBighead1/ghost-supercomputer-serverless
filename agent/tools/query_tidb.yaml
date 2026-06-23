@@ -1,0 +1,14 @@
+name: query_tidb
+description: Execute SQL queries against TiDB Cloud Serverless (MySQL/HTAP)
+input_schema:
+  properties:
+    query:
+      type: string
+      description: SQL query to execute
+    params:
+      type: array
+      description: Query parameters for parameterized queries
+  required: [query]
+implementation:
+  script: scripts/query_tidb.sh
+  runtime: sh

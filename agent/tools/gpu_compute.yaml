@@ -1,0 +1,14 @@
+name: gpu_compute
+description: Run heavy compute tasks on Modal GPU
+input_schema:
+  properties:
+    function:
+      type: string
+      description: Modal function name to execute
+    args:
+      type: object
+      description: Function arguments
+  required: [function]
+implementation:
+  script: scripts/gpu_compute.sh
+  runtime: sh

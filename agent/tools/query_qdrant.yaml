@@ -1,0 +1,17 @@
+name: query_qdrant
+description: Search local Qdrant vector database
+input_schema:
+  properties:
+    collection:
+      type: string
+      description: Collection name to search
+    vector:
+      type: array
+      description: Query vector for similarity search
+    limit:
+      type: number
+      description: Max results (default: 10)
+  required: [collection, vector]
+implementation:
+  script: scripts/query_qdrant.sh
+  runtime: sh
