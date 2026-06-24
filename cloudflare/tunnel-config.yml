@@ -1,0 +1,29 @@
+tunnel: YOUR_TUNNEL_ID
+credentials-file: /home/user/.cloudflared/YOUR_TUNNEL_ID.json
+
+ingress:
+  - hostname: cowagent.yourdomain.com
+    service: http://cowagent:9899
+    originRequest:
+      connectTimeout: 30s
+      keepAliveTimeout: 90s
+
+  - hostname: omniroute.yourdomain.com
+    service: http://omniroute:3000
+
+  - hostname: n8n.yourdomain.com
+    service: http://n8n:5678
+
+  - hostname: qdrant.yourdomain.com
+    service: http://qdrant:6333
+
+  - hostname: pocketbase.yourdomain.com
+    service: http://pocketbase:8090
+
+  - hostname: monitor.yourdomain.com
+    service: http://uptime-kuma:3001
+
+  - hostname: terminal.yourdomain.com
+    service: http://ttyd:7681
+
+  - service: http_status:404

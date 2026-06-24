@@ -1,0 +1,8 @@
+name: ghost-supercomputer
+region: us-central1
+
+deploy:
+  type: static
+  build:
+    command: echo "Static site ready"
+    output: .

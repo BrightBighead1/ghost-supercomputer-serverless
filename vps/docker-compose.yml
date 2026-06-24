@@ -1,0 +1,151 @@
+version: '3.8'
+
+services:
+  cowagent:
+    image: ghcr.io/zhayujie/cowagent:latest
+    container_name: cowagent
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9899:9899"
+    volumes:
+      - cowagent-data:/app/data
+      - ./cowagent/config.json:/app/config.json:ro
+    environment:
+      - OMNIRITE_URL=http://omniroute:3000
+    mem_limit: 512m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:9899"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-net
+
+  omniroute:
+    image: diegosouzapw/omniroute:latest
+    container_name: omniroute
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - omniroute-data:/app/data
+    mem_limit: 512m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-net
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6333:6333"
+      - "127.0.0.1:6334:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+      - ./qdrant/config.yaml:/qdrant/config/production.yaml:ro
+    mem_limit: 512m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-net
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - n8n-data:/home/node/.n8n
+    environment:
+      - GENERIC_TIMEZONE=UTC
+      - TZ=UTC
+      - N8N_SECURE_COOKIE=false
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=1
+      - DB_SQLITE_VACUUM_ON_STARTUP=true
+    mem_limit: 512m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-net
+
+  pocketbase:
+    image: ghcr.io/pocketbase/pocketbase:latest
+    container_name: pocketbase
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8090:8090"
+    volumes:
+      - pb-data:/pb/pb_data
+    mem_limit: 256m
+    cpus: 0.25
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-net
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3001"
+    volumes:
+      - kuma-data:/app/data
+    mem_limit: 256m
+    cpus: 0.25
+    networks:
+      - app-net
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CF_TUNNEL_TOKEN}
+    mem_limit: 128m
+    cpus: 0.1
+    networks:
+      - app-net
+
+  ttyd:
+    image: tsl0922/ttyd:latest
+    container_name: ttyd
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7681:7681"
+    command: ttyd -c ${TTYD_PASSWORD:-admin} bash
+    mem_limit: 128m
+    cpus: 0.1
+    networks:
+      - app-net
+
+volumes:
+  cowagent-data:
+  omniroute-data:
+  qdrant-data:
+  n8n-data:
+  pb-data:
+  kuma-data:
+
+networks:
+  app-net:
+    driver: bridge

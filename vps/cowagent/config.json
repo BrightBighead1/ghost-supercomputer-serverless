@@ -1,0 +1,21 @@
+{
+  "bot_type": "custom:omni01",
+  "custom_providers": [
+    {
+      "id": "omni01",
+      "name": "OmniRoute-FreeStack",
+      "api_key": "YOUR_OMNIROUTE_API_KEY",
+      "api_base": "http://omniroute:3000/v1",
+      "model": "auto"
+    }
+  ],
+  "channel_type": "web",
+  "agent": true,
+  "agent_workspace": "~/cow",
+  "agent_max_context_tokens": 40000,
+  "agent_max_context_turns": 30,
+  "agent_max_steps": 15,
+  "web_port": 9899,
+  "web_host": "0.0.0.0",
+  "cow_lang": "auto"
+}
